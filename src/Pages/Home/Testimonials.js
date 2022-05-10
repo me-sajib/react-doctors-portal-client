@@ -30,20 +30,22 @@ const Testimonials = () => {
   ];
   return (
     <section className="my-28">
-      <div className="flex justify-between">
-        <div className="testimonial-text">
-          <h3 className="text-xl font-bold text-primary">Testimonial</h3>
-          <h1 className="text-3xl">What Our Patients Says</h1>
+      <div className="width-container">
+        <div className="flex justify-between">
+          <div className="testimonial-text">
+            <h3 className="text-xl font-bold text-primary">Testimonial</h3>
+            <h1 className="text-3xl">What Our Patients Says</h1>
+          </div>
+          <img src={icon} alt="" className="lg:w-24 w-16" />
         </div>
-        <img src={icon} alt="" className="lg:w-24 w-16" />
-      </div>
 
-      {/* testimonials */}
+        {/* testimonials */}
 
-      <div className="grid lg:grid-cols-3 grid-cols-1 gap-5 pt-4">
-        {testimonials.map((testimonial) => (
-          <Review key={testimonial.id} testimonial={testimonial} />
-        ))}
+        <div className="grid lg:grid-cols-3 grid-cols-1 gap-5 pt-4">
+          {testimonials.map((testimonial) => (
+            <Review key={testimonial.id} testimonial={testimonial} />
+          ))}
+        </div>
       </div>
     </section>
   );
