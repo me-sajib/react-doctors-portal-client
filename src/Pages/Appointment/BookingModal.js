@@ -1,17 +1,38 @@
 import React from "react";
 import { format } from "date-fns";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const BookingModal = ({ treatment, date, setTreatment }) => {
   const { name, slots } = treatment;
 
-  const appointmentUser = (e) => {
+  const appointmentUser = async (e) => {
     e.preventDefault();
     const name = e.target.name.value;
     const email = e.target.email.value;
     const slot = e.target.slot.value;
     const number = e.target.number.value;
     const date = e.target.date.value;
-    console.log(name, email, slot, number, date);
+
+    // check user fill up or not
+    if (
+      name === "" ||
+      email === "" ||
+      slot === "" ||
+      number === "" ||
+      date === ""
+    ) {
+      return toast.error("Please fill up all the fields");
+    }
+    const appointment = { name, email, number, slot, date };
+    await axios
+      .post("http://localhost:5000/addAppointment", appointment)
+      .then((res) => {
+        if (res.data.acknowledged === true) {
+          toast.success("Appointment booked successfully");
+        }
+      });
+
     setTreatment(null);
   };
   return (
