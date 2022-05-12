@@ -1,15 +1,14 @@
 import React, { useEffect } from "react";
 import auth from "../../firebase.init";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  useSignInWithGoogle,
   useCreateUserWithEmailAndPassword,
   useUpdateProfile,
 } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import SocialLogin from "./SocialLogin";
 
 const SignUp = () => {
-  const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
   const [updateProfile, updating, Uerror] = useUpdateProfile(auth);
@@ -140,9 +139,7 @@ const SignUp = () => {
             </small>
           </p>
           <div class="divider">OR</div>
-          <button class="btn btn-outline" onClick={() => signInWithGoogle()}>
-            sign in with google
-          </button>
+          <SocialLogin />
         </div>
       </div>
     </div>
