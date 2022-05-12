@@ -1,58 +1,121 @@
-import React from "react";
+import React, { useEffect } from "react";
 import auth from "../../firebase.init";
-import { useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  useSignInWithGoogle,
+  useSignInWithEmailAndPassword,
+} from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 
 const Login = () => {
-  const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+  const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-  const submit = (data) => {
-    console.log(data);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  let from = location.state?.from || { pathname: "/" };
+
+  useEffect(() => {
+    if (user || gUser) {
+      navigate(from, { replace: true });
+    }
+  }, [user, gUser, navigate, from]);
+
+  const submit = async (data) => {
+    await signInWithEmailAndPassword(data.email, data.password);
   };
   return (
     <div className="flex items-center justify-center h-screen">
       <div class="card w-96 bg-base-100 shadow-xl">
         <div class="card-body">
-          <h2 class="text-center text-2xl font-bold text-secondary uppercase">
-            Login
-          </h2>
+          <h2 class="text-center text-2xl font-bold  uppercase">Login</h2>
           <form
             className="grid grid-cols-1 gap-3"
             onSubmit={handleSubmit(submit)}
           >
-            <input
-              type="email"
-              name="email"
-              {...register("email", { required: true })}
-              placeholder="Email Address"
-              class="input input-bordered input-md w-full max-w-xs"
-            />
-            {errors.email && (
-              <span className="text-error text-sm font-semibold">
-                *Enter your email
-              </span>
-            )}
-            <input
-              name="password"
-              type="password"
-              {...register("password", { required: true })}
-              placeholder="Enter Password"
-              class="input input-bordered input-md w-full max-w-xs"
-            />
-            {/* if password not enter then show error msg */}
-            {errors.password && (
-              <span className="text-error text-sm font-semibold">
-                *Enter your password
-              </span>
-            )}
-            <input type="submit" value="login" className="btn btn-primary" />
+            <div className="form-control w-full mx-w-xs">
+              <label htmlFor="" className="label">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                placeholder="Your Email"
+                className="input input-bordered w-full max-w-xs"
+                {...register("email", {
+                  required: {
+                    value: true,
+                    message: "Email is Required",
+                  },
+                  pattern: {
+                    value: /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/,
+                    message: "Provide a valid Email",
+                  },
+                })}
+              />
+              <label className="label">
+                {errors.email?.type === "required" && (
+                  <span className="label-text-alt text-red-500">
+                    {errors.email.message}
+                  </span>
+                )}
+                {errors.email?.type === "pattern" && (
+                  <span className="label-text-alt text-red-500">
+                    {errors.email.message}
+                  </span>
+                )}
+              </label>
+            </div>
+            {/* password input field */}
+            <div className="form-control w-full mx-w-xs">
+              <label htmlFor="" className="label">
+                <span className="label-text"> Password</span>
+              </label>
+              <input
+                type="password"
+                placeholder="Your password"
+                className="input input-bordered w-full max-w-xs"
+                {...register("password", {
+                  required: {
+                    value: true,
+                    message: "Password is Required",
+                  },
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+              />
+              <label className="label">
+                {errors.password?.type === "required" && (
+                  <span className="label-text-alt text-red-500">
+                    {errors.password.message}
+                  </span>
+                )}
+                {errors.password?.type === "minLength" && (
+                  <span className="label-text-alt text-red-500">
+                    {errors.password.message}
+                  </span>
+                )}
+              </label>
+            </div>
+            <input type="submit" value="login" className="btn w-full" />
           </form>
+          <p>
+            <small>
+              New to Doctors Portal?{" "}
+              <Link to="/signup" className="text-secondary">
+                Create new account
+              </Link>
+            </small>
+          </p>
           <div class="divider">OR</div>
           <button class="btn btn-outline" onClick={() => signInWithGoogle()}>
             sign in with google
