@@ -2,10 +2,16 @@ import React from "react";
 import { format } from "date-fns";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuthState } from "react-firebase-hooks/auth";
+import auth from "../../firebase.init";
+import Loading from "../Shared/Loading";
 
 const BookingModal = ({ treatment, date, setTreatment }) => {
   const { name, slots } = treatment;
-
+  const [user, loading] = useAuthState(auth);
+  if (loading) {
+    return <Loading />;
+  }
   const appointmentUser = async (e) => {
     e.preventDefault();
     const name = e.target.name.value;
@@ -78,12 +84,16 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
               <input
                 type="text"
                 name="name"
+                disabled
+                value={user?.displayName}
                 placeholder="your name"
                 class="input input-bordered input-md w-full max-w-xs"
               />
               <input
                 type="email"
                 name="email"
+                disabled
+                value={user?.email}
                 placeholder="your email"
                 class="input input-bordered input-md w-full max-w-xs"
               />
