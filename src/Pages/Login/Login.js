@@ -1,14 +1,12 @@
 import React, { useEffect } from "react";
 import auth from "../../firebase.init";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  useSignInWithGoogle,
-  useSignInWithEmailAndPassword,
-} from "react-firebase-hooks/auth";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import Loading from "../Shared/Loading";
+import SocialLogin from "./SocialLogin";
 
 const Login = () => {
-  const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
 
@@ -24,14 +22,20 @@ const Login = () => {
   let from = location.state?.from || { pathname: "/" };
 
   useEffect(() => {
-    if (user || gUser) {
+    if (user) {
       navigate(from, { replace: true });
     }
-  }, [user, gUser, navigate, from]);
+  }, [user, navigate, from]);
+
+  let errorMessage;
+  if (error) {
+    errorMessage = error?.message;
+  }
 
   const submit = async (data) => {
     await signInWithEmailAndPassword(data.email, data.password);
   };
+
   return (
     <div className="flex items-center justify-center h-screen">
       <div class="card w-96 bg-base-100 shadow-xl">
@@ -106,6 +110,15 @@ const Login = () => {
                 )}
               </label>
             </div>
+
+            {
+              // spinner show
+              loading && <Loading />
+            }
+            {
+              /* server error show */
+              error && <span className="text-red-500">{errorMessage}</span>
+            }
             <input type="submit" value="login" className="btn w-full" />
           </form>
           <p>
@@ -117,9 +130,7 @@ const Login = () => {
             </small>
           </p>
           <div class="divider">OR</div>
-          <button class="btn btn-outline" onClick={() => signInWithGoogle()}>
-            sign in with google
-          </button>
+          <SocialLogin />
         </div>
       </div>
     </div>
