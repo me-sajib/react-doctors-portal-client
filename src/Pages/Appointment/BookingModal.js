@@ -45,7 +45,7 @@ const BookingModal = ({ treatment, date, setTreatment, refetch }) => {
         if (res.data.acknowledged === true) {
           toast.success("Appointment booked successfully");
         } else if (res.data.result === false) {
-          toast.error(`Slot already booked ${date}  at  ${slot}`);
+          toast.error(`Slot already booked`);
         }
       });
     refetch();
