@@ -11,7 +11,7 @@ import Navbar from "./Pages/Shared/Navbar";
 
 function App() {
   return (
-    <div>
+    <>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -28,7 +28,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
       </Routes>
       <Toaster />
-    </div>
+    </>
   );
 }
 
