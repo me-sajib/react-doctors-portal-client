@@ -6,15 +6,15 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../../firebase.init";
 import Loading from "../Shared/Loading";
 
-const BookingModal = ({ treatment, date, setTreatment }) => {
-  const { name, slots } = treatment;
+const BookingModal = ({ treatment, date, setTreatment, refetch }) => {
+  const { name, slots, _id } = treatment;
   const [user, loading] = useAuthState(auth);
   if (loading) {
     return <Loading />;
   }
   const appointmentUser = async (e) => {
     e.preventDefault();
-    const name = e.target.name.value;
+    const userName = e.target.name.value;
     const email = e.target.email.value;
     const slot = e.target.slot.value;
     const number = e.target.number.value;
@@ -22,7 +22,7 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
 
     // check user fill up or not
     if (
-      name === "" ||
+      userName === "" ||
       email === "" ||
       slot === "" ||
       number === "" ||
@@ -30,15 +30,25 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
     ) {
       return toast.error("Please fill up all the fields");
     }
-    const appointment = { name, email, number, slot, date };
+    const appointment = {
+      treatmentId: _id,
+      treatment: name,
+      patientName: userName,
+      email,
+      number,
+      slot,
+      date,
+    };
     await axios
-      .post("http://localhost:5000/addAppointment", appointment)
+      .post("http://localhost:5000/booking", appointment)
       .then((res) => {
         if (res.data.acknowledged === true) {
           toast.success("Appointment booked successfully");
+        } else if (res.data.result === false) {
+          toast.error(`Slot already booked ${date}  at  ${slot}`);
         }
       });
-
+    refetch();
     setTreatment(null);
   };
   return (
